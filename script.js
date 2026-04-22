@@ -100,8 +100,29 @@ if (Date.parse(invite.expires_at) <= Date.now()) return false;
     );
 }
 
+function showSuccessPage() {
+    document.body.innerHTML = `
+        <div style="
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            height:100vh;
+            font-family:Inter;
+            background:#0f172a;
+            color:white;
+            flex-direction:column;
+        ">
+            <h1>✅ Account Created</h1>
+            <p>Check your email to verify your account.</p>
+        </div>
+    `;
+}
+
+
     // --- SIGNUP ---
     async function signUp() {
+    
+        if (signUpBtn.disabled) return;
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
 
@@ -159,9 +180,18 @@ if (Date.parse(invite.expires_at) <= Date.now()) return false;
                     "success"
                 );
 
-                btnText.innerText = "DONE";
-                emailInput.value = "";
-                passwordInput.value = "";
+                signUpBtn.disabled = true;
+    signUpBtn.style.opacity = "0.5";
+    signUpBtn.style.cursor = "not-allowed";
+
+    emailInput.disabled = true;
+    passwordInput.disabled = true;
+
+    btnText.innerText = "DONE";
+                
+    await markAsUsed(token);)
+    showSuccessPage();
+}
             }
         } catch (err) {
             showStatus("Network error. Check your connection.", "error");
