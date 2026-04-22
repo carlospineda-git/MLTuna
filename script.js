@@ -1,3 +1,5 @@
+
+
 /* --- ML TUNA AUTH SCRIPT --- */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,7 +19,7 @@ function getToken() {
 const token = getToken();  
 
 // --- VERIFY INVITE ---  
-async function verifyInvite(token) {  
+async function verifyInvite(token) {
     try {  
         const res = await fetch(  
             `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}&select=*`,  
@@ -33,22 +35,21 @@ async function verifyInvite(token) {
 
         // ❌ no token found  
         if (!data.length) return false;
-
 return true;
 
-const invite = data[0];  
+        const invite = data[0];  
 
         // ❌ already used  
         if (invite.used) return false;  
 
-        // ❌ expired
+        // ❌ expired  
+        if (Date.parse(invite.expires_at) <= Date.now()) return false;
 
-if (Date.parse(invite.expires_at) <= Date.now()) return false;
-return true;
+        return true;  
 
-} catch (err) {  
+    } catch (err) {  
         return false;  
-    }  
+    }
 }  
 
 // --- EXPIRED PAGE ---  
@@ -71,21 +72,21 @@ function showExpiredPage() {
 }  
 
 // --- PAGE LOAD CHECK ---  
-(async () => {  
-    if (!token) {  
+(async () => {
+    if (!token) {
         showExpiredPage();  
         return;  
     }  
 
     const valid = await verifyInvite(token);  
 
-    if (!valid) {  
+    if (!valid) {
         showExpiredPage();  
     }  
-})();  
+});  
 
 // --- MARK TOKEN USED ---  
-async function markAsUsed(token) {  
+async function markAsUsed(token) {
 await fetch(  
     "https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/rpc/use_invite",  
     {  
@@ -97,29 +98,26 @@ await fetch(
         },  
         body: JSON.stringify({  
             input_token: token  
-        })  
-    }  
+        })
+    }
 );
 
 }
 
-function showSuccessPage() {
-document.body.innerHTML =   <div style="   display:flex;   align-items:center;   justify-content:center;   height:100vh;   font-family:Inter;   background:#0f172a;   color:white;   flex-direction:column;   ">   <h1>✅ Account Created</h1>   <p>Check your email to verify your account.</p>   </div>  ;
-}
-
 // --- SIGNUP ---  
-async function signUp() {  
-if (signUpBtn.disabled) return;
+async function signUp() {
+
+    if (signUpBtn.disabled) return;
     const email = emailInput.value.trim();  
     const password = passwordInput.value.trim();  
 
     // Validation  
-    if (!email || !password) {  
+    if (!email || !password) {
         showStatus("Please fill in all fields", "error");  
         return;  
     }  
 
-    if (password.length < 6) {  
+    if (password.length < 6) {
         showStatus("Password must be at least 6 characters", "error");  
         return;  
     }  
@@ -129,8 +127,8 @@ if (signUpBtn.disabled) return;
     signUpBtn.style.opacity = "0.7";  
     signUpBtn.disabled = true;  
 
-    try {  
-        const res = await fetch(  
+    try {
+        const res = await fetch(
             "https://hflxahfkrzmiufhqagul.supabase.co/auth/v1/signup",  
             {  
                 method: "POST",  
@@ -151,7 +149,7 @@ if (signUpBtn.disabled) return;
 
         const data = await res.json();  
 
-        if (!res.ok) {  
+        if (!res.ok) {
             showStatus(  
                 data.error_description ||  
                     data.message ||  
@@ -159,7 +157,7 @@ if (signUpBtn.disabled) return;
                 "error"  
             );  
             btnText.innerText = "SIGN UP";  
-        } else {  
+        } else {
             await markAsUsed(token);  
 
             showStatus(  
@@ -167,35 +165,26 @@ if (signUpBtn.disabled) return;
                 "success"  
             );  
 
-            signUpBtn.disabled = true;  
-signUpBtn.style.opacity = "0.5";  
-signUpBtn.style.cursor = "not-allowed";  
-
-emailInput.disabled = true;  
-passwordInput.disabled = true;  
-
-btnText.innerText = "DONE";  
-showSuccessPage();
-
-}
-}
-} catch (err) {
-showStatus("Network error. Check your connection.", "error");
-btnText.innerText = "SIGN UP";
-} finally {
-signUpBtn.style.opacity = "1";
-signUpBtn.disabled = true;
-}
-}
+            btnText.innerText = "DONE";  
+            emailInput.value = "";  
+            passwordInput.value = "";  
+        }
+    } catch (err) {
+        showStatus("Network error. Check your connection.", "error");  
+        btnText.innerText = "SIGN UP";  
+    } finally {
+        signUpBtn.style.opacity = "1";  
+    }  
+}  
 
 // --- STATUS HELPER ---  
-function showStatus(text, type) {  
+function showStatus(text, type) {
     status.innerText = text;  
     status.className = `status-message ${type}`;  
 }  
 
 // --- EVENT ---  
-if (signUpBtn) {  
+if (signUpBtn) {
     signUpBtn.addEventListener("click", (e) => {  
         e.preventDefault();  
         signUp();  
