@@ -17,16 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- VERIFY INVITE ---
     async function verifyInvite(token) {
-        try {
-            const res = await fetch(
-                `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}&select=*`,
-                {
-                    headers: {
-                        "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
-                        "Authorization": "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
-                    }
-                }
-            );
+    const res = await fetch(
+        `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}&select=*`,
+        {
+            headers: {
+                "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
+                "Authorization": "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
+            }
+        }
+    );
+
+    const data = await res.json();
+
+    console.log("DEBUG DATA:", data);
+
+    return data.length > 0;
+}
 
             const data = await res.json();
 
