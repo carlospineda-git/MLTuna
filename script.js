@@ -2,13 +2,12 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     const signUpBtn = document.getElementById("signUpBtn");
-    const themeToggle = document.getElementById("themeToggle");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const status = document.getElementById("status");
     const btnText = document.querySelector(".btn-text");
 
-    // --- TOKEN HANDLING ---
+    // --- TOKEN ---
     function getToken() {
         const params = new URLSearchParams(window.location.search);
         return params.get("token");
@@ -17,37 +16,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const token = getToken();
 
     // --- VERIFY INVITE ---
+    
+    
     async function verifyInvite(token) {
-        try {
-            const res = await fetch(
-                `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}&select=*`,
-                {
-                    headers: {
-                        "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
-                        "Authorization": "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
-                    }
-                }
-            );
-
-            const data = await res.json();
-
-            // ❌ no token found
-            if (!data.length) return false;
-
-            const invite = data[0];
-
-            // ❌ already used
-            if (invite.used) return false;
-
-            // ❌ expired
-            if (new Date(invite.expires_at) <= new Date()) return false;
-
-            return true;
-
-        } catch (err) {
-            return false;
+    const res = await fetch(
+        `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}&expires_at=gt.now()&used=eq.false&select=*`,
+        {
+            headers: {
+                apikey: "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
+                Authorization: "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
+            }
         }
-    }
+    );
+
+    const data = await res.json();
+    return data.length > 0;
+}
 
     // --- EXPIRED PAGE ---
     function showExpiredPage() {
@@ -68,42 +52,59 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // --- PAGE LOAD CHECK ---
+    // --- SUCCESS PAGE ---
+    function showSuccessPage() {
+        document.body.innerHTML = `
+            <div style="
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                height:100vh;
+                font-family:Inter;
+                background:#0f172a;
+                color:white;
+                flex-direction:column;
+            ">
+                <h1>✅ Account Created</h1>
+                <p>Check your email to verify your account.</p>
+            </div>
+        `;
+    }
+
+    // --- PAGE CHECK ---
     (async () => {
-        if (!token) {
-            showExpiredPage();
-            return;
-        }
+        if (!token) return showExpiredPage();
 
         const valid = await verifyInvite(token);
 
-        if (!valid) {
-            showExpiredPage();
-        }
+        if (!valid) showExpiredPage();
     })();
 
-    // --- MARK TOKEN USED ---
+    // --- MARK USED ---
     async function markAsUsed(token) {
         await fetch(
-            `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}`,
+            "https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/rpc/use_invite",
             {
-                method: "PATCH",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
                     "Authorization": "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
                 },
-                body: JSON.stringify({ used: true })
+                body: JSON.stringify({ input_token: token })
             }
         );
     }
 
     // --- SIGNUP ---
     async function signUp() {
+
+        // 🔒 prevent spam click
+        if (signUpBtn.disabled) return;
+
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
 
-        // Validation
         if (!email || !password) {
             showStatus("Please fill in all fields", "error");
             return;
@@ -114,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // UI loading
         btnText.innerText = "PROCESSING...";
         signUpBtn.style.opacity = "0.7";
         signUpBtn.disabled = true;
@@ -144,33 +144,29 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) {
                 showStatus(
                     data.error_description ||
-                        data.message ||
-                        "Signup failed",
+                    data.message ||
+                    "Signup failed",
                     "error"
                 );
+
                 btnText.innerText = "SIGN UP";
-            } else {
-                await markAsUsed(token);
-
-                showStatus(
-                    "Check your email for the verification link! ✨",
-                    "success"
-                );
-
-                btnText.innerText = "DONE";
-                emailInput.value = "";
-                passwordInput.value = "";
+                signUpBtn.disabled = false; // allow retry
+                return;
             }
+
+            // ✅ SUCCESS
+            await markAsUsed(token);
+
+            showSuccessPage();
+
         } catch (err) {
             showStatus("Network error. Check your connection.", "error");
             btnText.innerText = "SIGN UP";
-        } finally {
-            signUpBtn.style.opacity = "1";
             signUpBtn.disabled = false;
         }
     }
 
-    // --- STATUS HELPER ---
+    // --- STATUS ---
     function showStatus(text, type) {
         status.innerText = text;
         status.className = `status-message ${type}`;
