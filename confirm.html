@@ -11,43 +11,39 @@
   async function verify() {
     const url = new URL(window.location.href);
 
-    const token_hash = url.searchParams.get("token_hash");
-    const type = url.searchParams.get("type");
+    const token = url.searchParams.get("token");
 
-    if (!token_hash || !type) {
-      document.body.innerHTML = "<h2>Invalid or expired link</h2>";
-      return;
+    // ❌ No token
+    if (!token) {
+        document.body.innerHTML = "<h2>Token not found</h2>";
+        return;
     }
 
-    const res = await fetch(
-      "https://hflxahfkrzmiufhqagul.supabase.co/auth/v1/verify",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
-        },
-        body: JSON.stringify({
-          token_hash,
-          type verify
-        })
-      }
-    );
+    try {
+        const res = await fetch(
+            `https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/invites?token=eq.${token}`,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
+                    "Authorization": "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
+                }
+            }
+        );
 
-    const data = await res.json();
+        const data = await res.json();
+        const invite = data[0];
 
-    if (!res.ok) {
-      document.body.innerHTML = `
-        <h2 style="color:red;">Verification Failed</h2>
-        <p>${data.error_description}</p>
-      `;
-    } else {
-      // ✅ success
-      window.location.href = "MLTuna/welcome.html";
+        // ✅ VALID → redirect
+        window.location.href = "/welcome.html";
+
+    } catch (err) {
+        document.body.innerHTML = "<h2>Connection error</h2>";
+        console.error(err);
     }
-  }
+}
 
-  verify();
+verify();
 </script>
 
 </body>

@@ -96,6 +96,25 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+
+function sendInviteEmail(email) {
+    const inviteLink = `https://carlospineda-git.github.io/MLTuna/confirm.html?token=${token}`;
+
+try {
+    emailjs.send(
+        "service_a2hpgys",
+        "template_6vlvl8m",
+        {
+            email: email,
+            invite_link: inviteLink
+        },
+        "fZ4GIJG7hr3XHbPq6"
+    );
+        console.log("Verification email sent!");
+    } catch (err) {
+        console.error("Email failed:", err);
+    }
+}
     // --- SIGNUP ---
     async function signUp() {
 
@@ -119,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
         signUpBtn.style.opacity = "0.7";
         signUpBtn.disabled = true;
 
-        try {
             const res = await fetch(
                 "https://hflxahfkrzmiufhqagul.supabase.co/auth/v1/signup",
                 {
@@ -131,13 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({
                         email,
                         password,
-                        options: {
-                            email_redirect_to:
-                                "https://mltuna-supa.netlify.app/confirm.html"
-                        }
                     })
                 }
             );
+            
 
             const data = await res.json();
 
@@ -152,17 +167,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnText.innerText = "SIGN UP";
                 signUpBtn.disabled = false; // allow retry
                 return;
-            }
+            } else {
 
             // ✅ SUCCESS
+
             await markAsUsed(token);
-
+            await sendInviteEmail(email);
             showSuccessPage();
-
-        } catch (err) {
-            showStatus("Network error. Check your connection.", "error");
-            btnText.innerText = "SIGN UP";
-            signUpBtn.disabled = false;
         }
     }
 
