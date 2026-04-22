@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
             );  
 
             const data = await res.json();  
+            const expiryDate = new Date(invite.expires_at).getTime();
+            const now = new Date().getTime();
 
             // ❌ no token found  
             if (!data.length) return false;
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (invite.used) return false;  
 
             // ❌ expired  
-            if (Date.parse(invite.expires_at) <= Date.now()) return false;
+            if (expiryDate <= now) return false;
 
             return true;  
 
