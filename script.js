@@ -96,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-
 function sendInviteEmail(email) {
     const inviteLink = `https://carlospineda-git.github.io/MLTuna/confirm.html?token=${token}`;
 
@@ -115,6 +114,8 @@ try {
         console.error("Email failed:", err);
     }
 }
+
+
     // --- SIGNUP ---
     async function signUp() {
 
@@ -153,6 +154,23 @@ try {
                 }
             );
             
+            async function insert(email) {
+            const res1 = await fetch(
+		'https://hflxahfkrzmiufhqagul.supabase.co/rest/v1/user_devices', {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
+				"Authorization": "Bearer sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu",
+				"Prefer": "return=minimal"
+			},
+			body: JSON.stringify({
+				email: email,
+				device_id: null
+			})
+		}
+	);
+	}
 
             const data = await res.json();
 
@@ -173,6 +191,7 @@ try {
 
             await markAsUsed(token);
             await sendInviteEmail(email);
+            await insert(email);
             showSuccessPage();
         }
     }
