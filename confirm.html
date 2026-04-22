@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Confirming...</title>
+</head>
+<body style="background:#0f172a;color:white;text-align:center;margin-top:100px;">
+
+<h2>Verifying your account...</h2>
+
+<script>
+  async function verify() {
+    const url = new URL(window.location.href);
+
+    const token_hash = url.searchParams.get("token_hash");
+    const type = url.searchParams.get("type");
+
+    if (!token_hash || !type) {
+      document.body.innerHTML = "<h2>Invalid or expired link</h2>";
+      return;
+    }
+
+    const res = await fetch(
+      "https://hflxahfkrzmiufhqagul.supabase.co/auth/v1/verify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
+        },
+        body: JSON.stringify({
+          token_hash,
+          type
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.body.innerHTML = `
+        <h2 style="color:red;">Verification Failed</h2>
+        <p>${data.error_description}</p>
+      `;
+    } else {
+      // ✅ success
+      window.location.href = "/welcome.html";
+    }
+  }
+
+  verify();
+</script>
+
+</body>
+</html>

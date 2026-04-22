@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ML Tuna - Email Confirmed</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-page">
+
+    <header class="auth-header">
+        <div class="brand-text">
+            <h2 class="brand-logo">⚡ ML Tuna</h2>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="card glass animate-on-load delay-1 auth-card">
+            <div class="success-icon">🎉</div>
+            <h2 class="auth-title">Email Confirmed!</h2>
+            <p class="text-muted auth-subtitle">Your account is now active and ready for optimization.</p>
+
+            <a href="index.html" class="auth-btn" style="text-decoration: none;">
+                <span class="btn-text">GO TO DASHBOARD</span>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Apply theme immediately on load
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</body>
+</html>
