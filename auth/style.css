@@ -1,0 +1,186 @@
+/* =========================================
+   MATERIAL 3 THEME SYSTEM (LIGHT & DARK)
+   ========================================= */
+
+:root {
+    /* --- LIGHT MODE TOKENS --- */
+    --md-sys-color-background: #FDFBFF;
+    --md-sys-color-surface-container: #F3F4F9;
+    --md-sys-color-surface-container-highest: #E2E2E6;
+    --md-sys-color-on-surface: #1A1C1E;
+    --md-sys-color-on-surface-variant: #44474E;
+    --md-sys-color-primary: #0061A4; /* Strong Blue */
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-outline: #74777F;
+    --md-sys-color-outline-variant: #C4C6D0;
+    --md-sys-color-error: #BA1A1A;
+    --md-sys-color-success: #006D3A;
+}
+
+@media (prefers-color-scheme: dark) {
+:root {
+    /* --- DARK MODE TOKENS --- */
+    --md-sys-color-background: #111318;
+    --md-sys-color-surface-container: #1E2025;
+    --md-sys-color-surface-container-highest: #33353B;
+    --md-sys-color-on-surface: #E2E2E9;
+    --md-sys-color-on-surface-variant: #C4C6D0;
+    --md-sys-color-primary: #A2C9FF; /* Soft Blue */
+    --md-sys-color-on-primary: #00315B;
+    --md-sys-color-outline: #8E9099;
+    --md-sys-color-outline-variant: #44474E;
+    --md-sys-color-error: #FFB4AB;
+    --md-sys-color-success: #6DD58C;
+}
+}
+    
+
+
+
+/* =========================================
+   CORE AUTH LAYOUT
+   ========================================= */
+
+body {
+    background: var(--background);
+    color: var(--text);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.auth-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    min-height: calc(100vh - 80px);
+}
+
+/* M3 Elevated Card */
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 24px;
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 28px; /* Classic M3 radius */
+    border: 1px solid var(--md-sys-color-outline-variant);
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+}
+
+/* =========================================
+   INPUTS & BUTTONS
+   ========================================= */
+
+.input-group {
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: left;
+}
+
+/* M3 Outlined Input */
+.auth-input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px; /* M3 input radius */
+    border: 1px solid var(--md-sys-color-outline);
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+
+.auth-input:focus {
+    outline: none;
+    border: 2px solid var(--md-sys-color-primary);
+}
+
+/* M3 Filled Pill Button */
+.auth-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 100px;
+    border: none;
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.auth-btn:active {
+    transform: scale(0.97);
+}
+
+/* =========================================
+   PASSWORD SPECIFIC ELEMENTS
+   ========================================= */
+
+.strength-meter {
+    width: 100%;
+    height: 4px;
+    background: var(--md-sys-color-outline-variant);
+    border-radius: 100px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+.strength-text {
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 6px;
+}
+
+.security-note {
+    margin-top: 24px;
+    padding: 16px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.security-note p {
+    font-size: 0.85rem;
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.status-message {
+    margin-top: 16px;
+    font-size: 0.85rem;
+}
+
+.status-message.error { color: var(--md-sys-color-error); }
+.status-message.success { color: var(--md-sys-color-success); }

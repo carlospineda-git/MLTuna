@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verifying...</title>
+      <link rel="stylesheet" href="style.css" />
+</head>
+
+<body style="background:#0f172a;color:white;text-align:center;margin-top:100px;">
+
+<h2>Verifying reset link...</h2>
+
+<script>
+async function verifyRecovery() {
+  const url = new URL(window.location.href);
+
+  const token_hash = url.searchParams.get("token_hash");
+  const type = url.searchParams.get("type");
+  const next = url.searchParams.get("next") || "/update-password.html";
+
+  if (!token_hash || !type) {
+    document.body.innerHTML = "<h2>Invalid or expired link</h2>";
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      "https://hflxahfkrzmiufhqagul.supabase.co/auth/v1/verify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": "sb_publishable_QglNYbjZZzMQ7fckuYH-kA_QqBPuvmu"
+        },
+        body: JSON.stringify({
+          token_hash,
+          type
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.body.innerHTML = `
+        <h2 style="color:red;">Link expired</h2>
+        <p>${data.error_description}</p>
+      `;
+    } else {
+      // ✅ redirect to password update page
+      
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      
+      window.location.href = next;
+    }
+
+  } catch (err) {
+    document.body.innerHTML = "<h2>Network error</h2>";
+  }
+}
+
+verifyRecovery();
+</script>
+
+</body>
+</html>
